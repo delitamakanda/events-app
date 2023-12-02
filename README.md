@@ -71,3 +71,64 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+Users
+
+user_id (Primary Key, Auto-Increment)
+username (Unique)
+email (Unique)
+password_hash
+first_name
+last_name
+date_joined
+
+
+Events
+
+event_id (Primary Key, Auto-Increment)
+name
+description
+event_date
+venue_id (Foreign Key, Refers to Venues.venue_id)
+organizer_id (Foreign Key, Refers to Users.user_id)
+Tickets
+
+ticket_id (Primary Key, Auto-Increment)
+event_id (Foreign Key, Refers to Events.event_id)
+purchaser_id (Foreign Key, Refers to Users.user_id)
+purchase_date
+price
+seat_number
+status (e.g., "Purchased", "Available", "Cancelled")
+Venues
+
+venue_id (Primary Key, Auto-Increment)
+name
+address
+city
+state
+country
+seating_capacity
+UserEvents (This table might be useful to record which user is attending which event, especially if users can attend an event without purchasing a ticket, or if they purchase multiple tickets for friends/family)
+
+user_event_id (Primary Key, Auto-Increment)
+user_id (Foreign Key, Refers to Users.user_id)
+event_id (Foreign Key, Refers to Events.event_id)
+Reviews (Optional table to store reviews for events)
+
+review_id (Primary Key, Auto-Increment)
+event_id (Foreign Key, Refers to Events.event_id)
+user_id (Foreign Key, Refers to Users.user_id)
+rating
+review_text
+date_posted
+
+
+Payments:
+
+PaymentID: Primary Key, INT, Auto-increment.
+UserID: Foreign Key, INT, References Users(UserID).
+TicketID: Foreign Key, INT, References Tickets(TicketID).
+Amount: DECIMAL(10,2).
+PaymentDate: DATETIME.
+PaymentMethod: ENUM('Credit Card', 'Debit Card', 'Paypal', 'Others').
