@@ -25,6 +25,8 @@ model User {
   review        Review[]
   ticket        Ticket[]
   userEvent     UserEvent[]
+
+  @@map("users")
 }
 
 model Event {
@@ -39,6 +41,8 @@ model Event {
   ticket        Ticket[]
   reviews       Review[]
   userEvent     UserEvent[]
+
+  @@map("events")
 }
 
 model Payment {
@@ -50,6 +54,8 @@ model Payment {
   amount        String
   paymentDate   DateTime @default(now())
   paymentMethod PaymentMethod @default(CREDITCARD)
+
+  @@map("payments")
 }
 
 model Review {
@@ -61,6 +67,8 @@ model Review {
   rating        Int
   reviewText    String
   datePosted    DateTime @default(now())
+
+  @@map("reviews")
 }
 
 model Ticket {
@@ -74,6 +82,8 @@ model Ticket {
   seatNumber    String
   status Status @default(AVAILABLE)
   payments      Payment[]
+
+  @@map("tickets")
 }
 
 model UserEvent {
@@ -82,6 +92,8 @@ model UserEvent {
   userId        Int?
   event         Event? @relation(fields: [eventId], references: [eventID])
   eventId       Int?
+
+  @@map("userevents")
 }
 
 model Venue {
@@ -93,6 +105,8 @@ model Venue {
   country         String
   seatingCapacity Int
   events          Event[]
+
+  @@map("venues")
 }
 
 enum Role {
