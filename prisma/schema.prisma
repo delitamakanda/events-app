@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID        Int      @id @default(autoincrement())
+  dateJoined    DateTime @default(now())
+  updatedDate   DateTime?
+  email         String   @unique
+  username      String   @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  role          Role     @default(USER)
+  event         Event[]
+  payment       Payment[]
+  review        Review[]
+  ticket        Ticket[]
+  userEvent     UserEvent[]
+}
+
+model Event {
+  eventID       Int @id @default(autoincrement())
+  name          String @unique
+  description   String
+  eventDate     DateTime @default(now())
+  venue         Venue? @relation(fields: [venueId], references: [venueID])
+  venueId       Int?
+  user          User? @relation(fields: [organizerId], references: [userID])
+  organizerId   Int?
+  ticket        Ticket[]
+  reviews       Review[]
+  userEvent     UserEvent[]
+}
+
+model Payment {
+  paymentID     Int @id @default(autoincrement())
+  user          User? @relation(fields: [userId], references: [userID])
+  userId        Int?
+  ticket        Ticket? @relation(fields: [ticketId], references: [ticketID])
+  ticketId      Int?
+  amount        String
+  paymentDate   DateTime @default(now())
+  paymentMethod PaymentMethod @default(CREDITCARD)
+}
+
+model Review {
+  reviewID      Int @id @default(autoincrement())
+  event         Event? @relation(fields: [eventId], references: [eventID])
+  eventId       Int?
+  user          User? @relation(fields: [userId], references: [userID])
+  userId        Int?
+  rating        Int
+  reviewText    String
+  datePosted    DateTime @default(now())
+}
+
+model Ticket {
+  ticketID      Int @id @default(autoincrement())
+  event         Event? @relation(fields: [eventId], references: [eventID])
+  eventId       Int?
+  user          User? @relation(fields: [purchaserId], references: [userID])
+  purchaserId   Int?
+  purchaseDate  DateTime @default(now())
+  price         String
+  seatNumber    String
+  status Status @default(AVAILABLE)
+  payments      Payment[]
+}
+
+model UserEvent {
+  userEventID   Int @id @default(autoincrement())
+  user          User? @relation(fields: [userId], references: [userID])
+  userId        Int?
+  event         Event? @relation(fields: [eventId], references: [eventID])
+  eventId       Int?
+}
+
+model Venue {
+  venueID         Int @id @default(autoincrement())
+  name            String @unique
+  address         String
+  city            String
+  state           String
+  country         String
+  seatingCapacity Int
+  events          Event[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  ORGANIZER
+}
+
+enum Status {
+  PURCHASED
+  AVAILABLE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CREDITCARD
+  DEBITCARD
+  PAYPAL
+  OTHER
+}

@@ -91,6 +91,8 @@ description
 event_date
 venue_id (Foreign Key, Refers to Venues.venue_id)
 organizer_id (Foreign Key, Refers to Users.user_id)
+
+
 Tickets
 
 ticket_id (Primary Key, Auto-Increment)
@@ -100,6 +102,8 @@ purchase_date
 price
 seat_number
 status (e.g., "Purchased", "Available", "Cancelled")
+
+
 Venues
 
 venue_id (Primary Key, Auto-Increment)
@@ -109,11 +113,13 @@ city
 state
 country
 seating_capacity
+
 UserEvents (This table might be useful to record which user is attending which event, especially if users can attend an event without purchasing a ticket, or if they purchase multiple tickets for friends/family)
 
 user_event_id (Primary Key, Auto-Increment)
 user_id (Foreign Key, Refers to Users.user_id)
 event_id (Foreign Key, Refers to Events.event_id)
+
 Reviews (Optional table to store reviews for events)
 
 review_id (Primary Key, Auto-Increment)
@@ -132,3 +138,35 @@ TicketID: Foreign Key, INT, References Tickets(TicketID).
 Amount: DECIMAL(10,2).
 PaymentDate: DATETIME.
 PaymentMethod: ENUM('Credit Card', 'Debit Card', 'Paypal', 'Others').
+
+
+# DB
+```bash
+docker compose up dev-db -d
+```
+
+```bash
+docker ps
+```
+
+```bash
+docker logs
+```
+
+# Prisma ORM
+
+init prisma db connection
+```bash
+pnpm prisma init
+```
+
+migrate schema to database
+```bash
+npx prisma migrate dev
+```
+
+checkout db
+```bash
+npx prisma studio
+```
+
