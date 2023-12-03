@@ -7,6 +7,7 @@ import { VenueModule } from './venue/venue.module';
 import { UserEventModule } from './user_event/user_event.module';
 import { ReviewModule } from './review/review.module';
 import { PaymentModule } from './payment/payment.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PaymentModule } from './payment/payment.module';
     UserEventModule,
     ReviewModule,
     PaymentModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
