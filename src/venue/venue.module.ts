@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { VenueController } from './venue.controller';
 
-@Module({})
+@Module({
+  controllers: [VenueController]
+})
 export class VenueModule {}
