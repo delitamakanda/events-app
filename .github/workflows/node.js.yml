@@ -23,3 +23,5 @@ jobs:
       run: pnpm build
     - name: Test
       run: pnpm test
+    - name: Test e2e
+      run: pnpm run test:e2e
