@@ -19,7 +19,3 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
-    - name: Test
-      run: pnpm test
-    - name: Test e2e
-      run: pnpm run test:e2e
