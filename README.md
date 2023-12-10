@@ -170,3 +170,7 @@ checkout db
 npx prisma studio
 ```
 
+checkout test db
+```bash
+npx dotenv -e .env.test -- prisma studio
+```
