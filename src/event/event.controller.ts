@@ -5,33 +5,54 @@ import {
   UseGuards,
   Post,
   Delete,
+  Param,
+  ParseIntPipe,
+  Body,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard';
 import { EventService } from './event.service';
-import { EventDto } from './dto';
+import { CreateEventDto, UpdateEventDto } from './dto';
+import { GetUser } from './../auth/decorator';
 
 @UseGuards(JwtGuard)
 @Controller('events')
 export class EventController {
   constructor(private eventService: EventService) {}
   @Get()
-  getEvents() {
-    return this.eventService.getEvents();
+  getEvents(@GetUser('userID') userID: number) {
+    return this.eventService.getEvents(userID);
   }
 
-  @Get('eventID')
-  getEventByID(eventId: number) {
-    console.log(eventId);
+  @Get(':eventID')
+  getEventById(
+    @GetUser('userID') userID: number,
+    @Param('eventID', ParseIntPipe) eventID: number,
+  ) {
+    return this.eventService.getEventById(userID, eventID);
   }
 
-  @Patch()
-  updateEvent() {}
+  @Patch(':eventID')
+  updateEventById(
+    @GetUser('userID') userID: number,
+    @Param('eventID', ParseIntPipe) eventID: number,
+    @Body() dto: UpdateEventDto,
+  ) {
+    return this.eventService.updateEvent(userID, eventID, dto);
+  }
 
   @Post()
-  createEvent(dto: EventDto) {
-    console.log(dto);
+  createEventById(
+    @GetUser('userID') userID: number,
+    @Body() dto: CreateEventDto,
+  ) {
+    return this.eventService.createEvent(userID, dto);
   }
 
-  @Delete()
-  deleteEvent() {}
+  @Delete(':eventID')
+  deleteEventById(
+    @GetUser('userID') userID: number,
+    @Param('eventID', ParseIntPipe) eventID: number,
+  ) {
+    return this.eventService.deleteEvent(userID, eventID);
+  }
 }

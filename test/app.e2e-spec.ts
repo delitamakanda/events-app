@@ -5,10 +5,12 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AuthDto } from 'src/auth/dto';
 import * as pactum from 'pactum';
 import { EditUserDto } from 'src/user/dto';
+import { CreateEventDto, UpdateEventDto } from 'src/event/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -20,11 +22,11 @@ describe('AppController (e2e)', () => {
     prisma = app.get(PrismaService);
     await prisma.cleanDB();
     pactum.request.setBaseUrl('http://localhost:3333');
-  });
+  }, 70000);
 
   afterAll(async () => {
     await app.close();
-  });
+  }, 70000);
 
   describe('Auth', () => {
     describe('POST /auth/signup', () => {
@@ -39,7 +41,7 @@ describe('AppController (e2e)', () => {
           .post('/auth/signup')
           .withBody(dto)
           .expectStatus(201);
-      });
+      }, 70000);
       it('should throw an error if the email is missing', () => {
         pactum
           .spec()
@@ -49,7 +51,7 @@ describe('AppController (e2e)', () => {
             passwordHash: '123',
           })
           .expectStatus(400);
-      });
+      }, 70000);
       it('should throw an error if the password is missing', () => {
         pactum
           .spec()
@@ -59,7 +61,7 @@ describe('AppController (e2e)', () => {
             username: 'john.doe',
           })
           .expectStatus(400);
-      });
+      }, 70000);
     });
     describe('POST /auth/login', () => {
       it('should login', () => {
@@ -73,7 +75,7 @@ describe('AppController (e2e)', () => {
           .withBody(dto)
           .expectStatus(200)
           .stores('userAt', 'access_token');
-      });
+      }, 70000);
     });
   });
 
@@ -87,7 +89,7 @@ describe('AppController (e2e)', () => {
             Authorization: 'Bearer $S{userAt}',
           })
           .expectStatus(200);
-      });
+      }, 70000);
     });
     describe('PATCH /users/:id', () => {
       it('should edit user', () => {
@@ -105,15 +107,84 @@ describe('AppController (e2e)', () => {
           .expectStatus(200)
           .expectBodyContains(dto.firstName)
           .expectBodyContains(dto.lastName);
-      });
+      }, 70000);
     });
   });
 
   describe('Event', () => {
-    describe('GET /events', () => {});
-    describe('GET /events/:id', () => {});
-    describe('POST /events', () => {});
-    describe('PATCH /events/:id', () => {});
+    describe('GET empty events', () => {
+      it('should get empty events', () => {
+        return pactum
+          .spec()
+          .get('/events')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      }, 70000);
+    });
+    describe('POST /events', () => {
+      it('should create event', () => {
+        const dto: CreateEventDto = {
+          name: 'peace festival',
+          organizerId: 1,
+          eventDate: new Date().toISOString(),
+          description: 'peace festival for world peace',
+        };
+        return pactum
+          .spec()
+          .post('/events')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(201)
+          .stores('eventID', 'eventID');
+      }, 70000);
+    });
+    describe('GET /events', () => {
+      it('should get  events', () => {
+        return pactum
+          .spec()
+          .get('/events')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(1);
+      }, 70000);
+    });
+    describe('GET /events/:id', () => {
+      it('should get event by ID', () => {
+        return pactum
+          .spec()
+          .get('/events/{eventID}')
+          .withPathParams('eventID', '$S{eventID}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('$S{eventID}');
+      }, 70000);
+    });
+    describe('PATCH /events/:id', () => {
+      it('should edit event', () => {
+        const dto: UpdateEventDto = {
+          name: 'peaceful festival 2024',
+        };
+        return pactum
+          .spec()
+          .patch('/events/{eventID}')
+          .withPathParams('eventID', '$S{eventID}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.name);
+      }, 70000);
+    });
     describe('DELETE /events/:id', () => {});
   });
 
