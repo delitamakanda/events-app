@@ -58,13 +58,14 @@ export class EventService {
   }
 
   async deleteEvent(userID: number, eventID: number) {
-    try {
-      const event = await this.prisma.event.delete({
-        where: { eventID },
-      });
-      return event;
-    } catch (error) {
-      throw error;
+    const event = await this.prisma.event.findUnique({
+      where: { eventID },
+    });
+    if (!event || event.organizerId !== userID) {
+      throw new ForbiddenException('Access denied');
     }
+    await this.prisma.event.delete({
+      where: { eventID },
+    });
   }
 }

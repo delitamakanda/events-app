@@ -185,7 +185,30 @@ describe('AppController (e2e)', () => {
           .expectBodyContains(dto.name);
       }, 70000);
     });
-    describe('DELETE /events/:id', () => {});
+    describe('DELETE /events/:id', () => {
+      it('should delete event by id', () => {
+        return pactum
+          .spec()
+          .delete('/events/{eventID}')
+          .withPathParams('eventID', '$S{eventID}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(204);
+      }, 70000);
+
+      it('should get empty event', () => {
+        return pactum
+          .spec()
+          .get('/events/{eventID}')
+          .withPathParams('eventID', '$S{eventID}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('');
+      }, 70000);
+    });
   });
 
   describe('Ticket', () => {

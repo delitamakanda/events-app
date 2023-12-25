@@ -8,6 +8,8 @@ import {
   Param,
   ParseIntPipe,
   Body,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard';
 import { EventService } from './event.service';
@@ -47,7 +49,7 @@ export class EventController {
   ) {
     return this.eventService.createEvent(userID, dto);
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':eventID')
   deleteEventById(
     @GetUser('userID') userID: number,
